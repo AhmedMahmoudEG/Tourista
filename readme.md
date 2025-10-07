@@ -134,9 +134,9 @@ Then visit 👉 http://localhost:8000
 
 Ahmed Mahmoud
 🎓 Computer Science Graduate | 💻 Node.js Backend Developer
-📧 ahmed598@hotmail.com
+📧 ahmed.mahmoud598@hotmail.com
 
-🌐 [LinkedIn](https://www.linkedin.com/in/ahmadmahmoud98) • [GitHub](https://github.com/AhmedMahmoudEG) • [Contact me](mailto:ahmed598@hotmail.com)
+🌐 [LinkedIn](https://www.linkedin.com/in/ahmadmahmoud98) • [GitHub](https://github.com/AhmedMahmoudEG) • [Contact me](mailto:ahmed.mahmoud598@hotmail.com)
 
 # 📜 License
 
