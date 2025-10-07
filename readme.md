@@ -111,16 +111,22 @@ Then visit 👉 http://localhost:8000
 
 ## 🧩 API Highlights
 
-| Method     | Endpoint                                    | Description                    |
-| ---------- | ------------------------------------------- | ------------------------------ |
-| **GET**    | `/api/v1/tours`                             | Get all tours                  |
-| **GET**    | `/api/v1/tours/:id`                         | Get a specific tour            |
-| **POST**   | `/api/v1/tours`                             | Create new tour (Admin only)   |
-| **PATCH**  | `/api/v1/tours/:id`                         | Update tour (Admin only)       |
-| **DELETE** | `/api/v1/tours/:id`                         | Delete tour (Admin only)       |
-| **POST**   | `/api/v1/users/signup`                      | Register new user              |
-| **POST**   | `/api/v1/users/login`                       | Login existing user            |
-| **POST**   | `/api/v1/bookings/checkout-session/:tourId` | Create Stripe checkout session |
+## 📘 API Documentation
+
+You can explore the full API endpoints and examples in Postman:  
+[Tourista API Documentation](https://documenter.getpostman.com/view/26954816/2sB3Hrmxgo)
+
+Here are a few highlights:
+
+| Method | Endpoint                                    | Description                    |
+| ------ | ------------------------------------------- | ------------------------------ |
+| GET    | `/api/v1/tours`                             | Fetch all tours                |
+| GET    | `/api/v1/tours/:id`                         | Fetch a single tour by ID      |
+| POST   | `/api/v1/users/signup`                      | Register a new user            |
+| POST   | `/api/v1/users/login`                       | Authenticate user login        |
+| POST   | `/api/v1/bookings/checkout-session/:tourId` | Create Stripe checkout session |
+
+> For full request/response examples, authentication details, and error codes, see the [Tourista API Documentation on Postman](https://documenter.getpostman.com/view/26954816/2sB3Hrmxgo).
 
 ## 📈 Performance & Optimization
 
