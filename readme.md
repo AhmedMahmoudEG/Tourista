@@ -45,14 +45,18 @@ Originally inspired by Jonas Schmedtmann’s _Natours_ project, Tourista has bee
 
 The app follows the **MVC (Model–View–Controller)** architecture for clean separation of concerns:
 project/
+
+```bash
+project/
 │
-├── controllers/ # Route logic and API controllers
-├── models/ # Mongoose schemas
-├── routes/ # API and view routes
-├── public/ # Static assets (CSS, JS, images)
-├── views/ # Pug templates
-├── utils/ # Utility modules (email, error handling, etc.)
-└── server.js # Entry point
+├── controllers/        # Route logic and API controllers
+├── models/             # Mongoose schemas
+├── routes/             # API and view routes
+├── public/             # Static assets (CSS, JS, images)
+├── views/              # Pug templates
+├── utils/              # Utility modules (email, error handling, etc.)
+└── server.js           # Entry point
+```
 
 ---
 
