@@ -1,3 +1,7 @@
+<h2 align="center">
+  🌍 <a href="https://tourista-oac7.onrender.com/" target="_blank">Live Demo — Tourista App</a>
+</h2>
+
 # 🧭 Tourista – Full-Stack Travel Booking Application
 
 **Tourista** is a full-stack travel booking web application built with **Node.js**, **Express**, and **MongoDB**.  
