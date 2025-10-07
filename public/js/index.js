@@ -76,7 +76,7 @@ if (document.readyState === 'loading') {
   if (mapBox) {
     try {
       const locations = JSON.parse(mapBox.dataset.locations);
-      console.log('Locations data (immediate):', locations);
+      // console.log('Locations data (immediate):', locations);
 
       if (locations && locations.length > 0) {
         setTimeout(() => {

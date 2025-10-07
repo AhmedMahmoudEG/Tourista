@@ -14,6 +14,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 const cors = require('cors');
 const bookingRouter = require('./routes/bookingRoute.js');
 
@@ -29,37 +30,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({ origin: 'http://localhost:8000' }));
 //security HTTP HEADERS
-app.use(
-  helmet()
-  //   {
-  //   contentSecurityPolicy: {
-  //     directives: {
-  //       defaultSrc: ["'self'", 'data:', 'blob:', 'https:', 'ws:'],
-  //       baseUri: ["'self'"],
-  //       fontSrc: ["'self'", 'https:', 'data:'],
-  //       scriptSrc: [
-  //         "'self'",
-  //         'https://js.stripe.com',
-  //         'https://cdnjs.cloudflare.com',
-  //         "'unsafe-inline'",
-  //       ],
-  //       frameSrc: ["'self'", 'https://js.stripe.com', 'https://*.stripe.com'],
-  //       connectSrc: [
-  //         "'self'",
-  //         'https://api.stripe.com',
-  //         'https://*.stripe.com',
-  //         'https://r.stripe.com',
-  //         'http://127.0.0.1:8000',
-  //         'ws://127.0.0.1:*', //
-  //         'wss://127.0.0.1:*', //
-  //       ],
-  //       objectSrc: ["'none'"],
-  //       styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
-  //       imgSrc: ["'self'", 'data:', 'blob:', 'https:'], //
-  //     },
-  //   },
-  // })
-);
+app.use(helmet());
 //Development Logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -99,7 +70,7 @@ app.use(
     ],
   })
 );
-
+app.use(compression());
 //test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();

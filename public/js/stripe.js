@@ -6,10 +6,10 @@ export const bookTour = async tourId => {
   try {
     // Get checkout session from your backend
     const { data } = await axios.get(
-      `http://127.0.0.1:8000/api/v1/bookings/checkout-session/${tourId}`
+      `api/v1/bookings/checkout-session/${tourId}`
     );
 
-    console.log('SESSION RESPONSE:', data);
+    // console.log('SESSION RESPONSE:', data);
 
     // // Load Stripe
     // const stripe = await loadStripe(
