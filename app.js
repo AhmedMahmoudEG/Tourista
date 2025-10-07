@@ -1,7 +1,7 @@
 const { protectOptional } = require('./controllers/authController');
 const path = require('path');
 const express = require('express');
-const morgan = require('morgan');
+
 const rateLimit = require('express-rate-limit');
 const globalErrorHandler = require('./controllers/errorController.js');
 const tourRouter = require('./routes/tourRoute.js');
@@ -32,9 +32,9 @@ app.use(cors({ origin: 'http://localhost:8000' }));
 //security HTTP HEADERS
 app.use(helmet());
 //Development Logging
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+// if (process.env.NODE_ENV === 'development') {
+//   app.use(morgan('dev'));
+// }
 //limit request from same API
 const limiter = rateLimit({
   max: 100,
