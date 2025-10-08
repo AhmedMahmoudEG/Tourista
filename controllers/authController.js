@@ -45,16 +45,13 @@ exports.logOut = (req, res) => {
 };
 //create new User
 exports.signup = catchAsync(async (req, res, next) => {
-  // If user uploaded a photo, add filename to body
-  if (req.file) req.body.photo = req.file.filename;
-
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    photo: req.file ? req.file.filename : undefined, // Use filename from resize middleware
     role: req.body.role,
-    photo: req.body.photo,
   });
 
   const url = `${req.protocol}://${req.get('host')}/me`;
