@@ -7,6 +7,8 @@ import { updateSettings } from './updateSettings';
 import { resetPassword } from './resetPassword';
 import { forgotPassword } from './forgetPassword';
 import { bookTour } from './stripe';
+import { initDragToScroll } from './dragToScroll';
+
 // DOM Elements
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
@@ -17,6 +19,8 @@ const userPasswordForm = document.querySelector('.form-user-password');
 const resetPasswordForm = document.getElementById('resetPasswordForm');
 const forgotForm = document.getElementById('forgotPasswordForm');
 const bookBtn = document.getElementById(`book-tour`);
+
+initDragToScroll();
 // Wait for DOM to be fully loaded including CSS
 document.addEventListener('DOMContentLoaded', function () {
   // Map initialization - wait a bit longer for CSS to fully load

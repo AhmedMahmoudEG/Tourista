@@ -1415,6 +1415,7 @@ body {
     bottom: 0;
     background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
+  z-index: 1;
 }
 
 .reviews {
@@ -1427,6 +1428,9 @@ body {
   scroll-behavior: smooth;
   padding-left: 2rem;
   padding-right: 2rem;
+  position: relative;
+  cursor: grab;
+  user-select: none; /* Prevent text selection while dragging */
 
   /* Custom scrollbar for reviews */
   &::-webkit-scrollbar {
@@ -1434,16 +1438,23 @@ body {
   }
 
   &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(
+      255,
+      255,
+      255,
+      0.15
+    ); /* A slightly more transparent track */
     border-radius: 10px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.5);
+    background: var(
+      --bg-primary
+    ); /* Use the primary background color (white in light mode) */
     border-radius: 10px;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.7);
+      background: var(--bg-tertiary); /* A slightly darker color on hover */
     }
   }
 }
