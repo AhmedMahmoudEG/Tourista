@@ -69,7 +69,10 @@ const limiter = rateLimit({
   message: 'Too many request from this IP, please try again in an hour!',
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  // trustProxy: 1, // No longer needed as we trust the proxy globally
+  // Use a custom key generator to safely get the IP address from the proxy header
+  keyGenerator: (req, res) => {
+    return req.ip;
+  },
 });
 app.use('/api', limiter);
 //Body Parser, reading data from body into req.body
