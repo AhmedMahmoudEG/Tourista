@@ -19,7 +19,7 @@ const cors = require('cors');
 const bookingRouter = require('./routes/bookingRoute.js');
 
 const app = express();
-// app.enable('trust proxy'); // We will handle proxy trust in the rate limiter directly
+app.enable('trust proxy');
 //set pug view engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -69,7 +69,7 @@ const limiter = rateLimit({
   message: 'Too many request from this IP, please try again in an hour!',
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  trustProxy: 1, // Trust the first proxy hop (e.g., for Heroku/Render)
+  // trustProxy: 1, // No longer needed as we trust the proxy globally
 });
 app.use('/api', limiter);
 //Body Parser, reading data from body into req.body
