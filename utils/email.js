@@ -49,7 +49,7 @@ module.exports = class Email {
     await this.newTransport().sendMail(mailOptions);
   }
   async sendWelcome() {
-    await this.send(`Welcome`, `Welcome to Tourista Family!`);
+    await this.send('welcome', 'Welcome to Tourista Family!');
   }
   async sendPasswordReset() {
     await this.send(
