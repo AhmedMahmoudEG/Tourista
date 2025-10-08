@@ -13,17 +13,16 @@ const signToken = id => {
   });
 };
 //create and send token
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
   //send the token via the cookie
-  const cookieOptions = {
+  res.cookie('jwt', token, {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-  };
-  if (process.env.NODE_ENV == 'production') cookieOptions.secure = true;
-  res.cookie('jwt', token, cookieOptions);
+    secure: req.secure || req.headers('x-forwarded-proto') === 'https',
+  });
   //remove the password from output
   user.password = undefined;
   res.status(statusCode).json({
@@ -60,7 +59,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const url = `${req.protocol}://${req.get('host')}/me`;
   await new Email(newUser, url).sendWelcome();
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 //login user
@@ -77,7 +76,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password!', 401));
   }
   //if everything is okay, send token to client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 //protect middleware
@@ -242,7 +241,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // 3) update the changedpassword for the current user
   await user.save();
   // 4) log the user in (send JWT)
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -256,19 +255,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   user.passwordConfirm = req.body.passwordConfirm;
   await user.save();
   // 4) log the user in send jwt
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
-
-// exports.updateUserData = catchAsync(async (req, res, next) => {
-//   //1) get user from collection
-//   const user = await User.findById(req.user.id).select('+password');
-
-//   // 2) check if password is correct
-//   if (!(await user.correctPassword(req.body.currentPassword, user.password)))
-//     return next(new AppError('Your current password is Wrong', 401));
-//   // 3) update the user data
-//   user = req.body;
-//   await user.save({ validateBeforeSave: false });
-//   // 4) log the user in send jwt
-//   createSendToken(user, 200, res);
-// });

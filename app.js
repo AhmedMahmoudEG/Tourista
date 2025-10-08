@@ -19,18 +19,45 @@ const cors = require('cors');
 const bookingRouter = require('./routes/bookingRoute.js');
 
 const app = express();
-
+app.enable('trust proxy');
 //set pug view engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // 1) GLOBAL MIDDLEWARES
+app.use(cors({ origin: 'http://localhost:8000' }));
+app.options('*', cors());
+// app.options('/api/v1/tours/:id', cors());
+
 //serving static files
 // app.use(express.static(`${__dirname}/public`));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors({ origin: 'http://localhost:8000' }));
-//security HTTP HEADERS
-app.use(helmet());
+
+// Set security HTTP headers
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      baseUri: ["'self'"],
+      fontSrc: ["'self'", 'https:', 'data:'],
+      scriptSrc: ["'self'", 'https://api.mapbox.com', 'https://js.stripe.com'],
+      scriptSrcAttr: ["'none'"],
+      styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+      objectSrc: ["'none'"],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https://*.mapbox.com'],
+      connectSrc: [
+        "'self'",
+        'https://api.mapbox.com',
+        'https://events.mapbox.com',
+        'ws://localhost:*', // For hot module reloading in development
+      ],
+      frameSrc: ["'self'", 'https://js.stripe.com', 'https://m.stripe.network'],
+      workerSrc: ["'self'", 'blob:'],
+      upgradeInsecureRequests: [],
+    },
+  })
+);
+
 //Development Logging
 // if (process.env.NODE_ENV === 'development') {
 //   app.use(morgan('dev'));

@@ -21,21 +21,8 @@ const bookBtn = document.getElementById(`book-tour`);
 document.addEventListener('DOMContentLoaded', function () {
   // Map initialization - wait a bit longer for CSS to fully load
   if (mapBox) {
-    try {
-      const locations = JSON.parse(mapBox.dataset.locations);
-
-      // Ensure the map container is visible and has dimensions
-      if (locations && locations.length > 0) {
-        // Wait for CSS to be applied
-        setTimeout(() => {
-          displayMap(locations);
-        }, 300);
-      } else {
-        console.warn('No locations data found');
-      }
-    } catch (error) {
-      console.error('Error parsing locations data:', error);
-    }
+    const locations = JSON.parse(mapBox.dataset.locations);
+    displayMap(locations);
   }
 
   // Login form handling
