@@ -7,49 +7,41 @@ const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 const AppError = require('../utils/appError');
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
-  try {
-    const tour = await Tour.findById(req.params.tourId);
-    if (!tour) return next(new AppError('Tour not found', 404));
+  const tour = await Tour.findById(req.params.tourId);
+  if (!tour) return next(new AppError('Tour not found', 404));
 
-    const session = await stripe.checkout.sessions.create({
-      ui_mode: 'hosted',
-      mode: 'payment',
-      payment_method_types: ['card'],
-      customer_email: req.user.email,
-      client_reference_id: req.params.tourId,
-      success_url: `${req.protocol}://${req.get('host')}/my-tours?alert=booking`,
-      cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
-      line_items: [
-        {
-          price_data: {
-            currency: 'egp',
-            product_data: {
-              name: `${tour.name} Tour`,
-              description: tour.summary,
-              // In production, images should be hosted and publicly accessible.
-              // The URL must be absolute for Stripe to be able to access it.
-              images: [
-                `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`,
-              ],
-            },
-            unit_amount: tour.price * 100,
+  const session = await stripe.checkout.sessions.create({
+    ui_mode: 'hosted',
+    mode: 'payment',
+    payment_method_types: ['card'],
+    customer_email: req.user.email,
+    client_reference_id: req.params.tourId,
+    success_url: `${req.protocol}://${req.get('host')}/my-tours?alert=booking`,
+    cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
+    line_items: [
+      {
+        price_data: {
+          currency: 'egp',
+          product_data: {
+            name: `${tour.name} Tour`,
+            description: tour.summary,
+            // In production, images should be hosted and publicly accessible.
+            // The URL must be absolute for Stripe to be able to access it.
+            images: [
+              `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`,
+            ],
           },
-          quantity: 1,
+          unit_amount: tour.price * 100,
         },
-      ],
-    });
+        quantity: 1,
+      },
+    ],
+  });
 
-    res.status(200).json({
-      status: 'success',
-      url: session.url,
-    });
-  } catch (err) {
-    console.error('❌ STRIPE ERROR:', err);
-    res.status(400).json({
-      status: 'fail',
-      message: err.message,
-    });
-  }
+  res.status(200).json({
+    status: 'success',
+    url: session.url,
+  });
 });
 
 // exports.createUserCheckout = catchAsync(async (req, res, next) => {

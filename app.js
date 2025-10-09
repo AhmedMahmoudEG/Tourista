@@ -55,6 +55,7 @@ app.use(
         'https://events.mapbox.com',
         'https://*.stripe.com',
       ],
+      'frame-src': ["'self'", 'https://js.stripe.com/'],
       'img-src': [
         "'self'",
         'data:',
