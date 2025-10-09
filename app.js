@@ -38,24 +38,31 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Set security HTTP headers
 app.use(
   helmet.contentSecurityPolicy({
+    // Loosened for demonstration; tighten as needed for production
     directives: {
-      defaultSrc: ["'self'"],
-      baseUri: ["'self'"],
-      fontSrc: ["'self'", 'https:', 'data:'],
-      scriptSrc: ["'self'", 'https://api.mapbox.com', 'https://js.stripe.com'],
-      scriptSrcAttr: ["'none'"],
-      styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
-      objectSrc: ["'none'"],
-      imgSrc: ["'self'", 'data:', 'blob:', 'https://*.mapbox.com'],
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      'script-src': [
+        "'self'",
+        'https://js.stripe.com/v3/',
+        'https://api.mapbox.com/',
+        "'unsafe-inline'",
+      ],
       connectSrc: [
         "'self'",
+        'ws://localhost:*',
+        'http://127.0.0.1:*',
         'https://api.mapbox.com',
         'https://events.mapbox.com',
-        'ws://localhost:*', // For hot module reloading in development
+        'https://*.stripe.com',
       ],
-      frameSrc: ["'self'", 'https://js.stripe.com', 'https://m.stripe.network'],
-      workerSrc: ["'self'", 'blob:'],
-      upgradeInsecureRequests: [],
+      'img-src': [
+        "'self'",
+        'data:',
+        'blob:',
+        'https://*.mapbox.com',
+        `https://*.tile.openstreetmap.org`,
+      ],
+      'worker-src': ["'self'", 'blob:'],
     },
   })
 );

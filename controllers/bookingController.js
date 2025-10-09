@@ -26,7 +26,9 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
             product_data: {
               name: `${tour.name} Tour`,
               description: tour.summary,
+              // In production, images should be hosted and publicly accessible.
               images: [
+                // This URL needs to point to where your images are hosted in production.
                 `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`,
               ],
             },

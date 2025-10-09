@@ -6,7 +6,7 @@ export const bookTour = async tourId => {
   try {
     // Get checkout session from your backend
     const { data } = await axios.get(
-      `api/v1/bookings/checkout-session/${tourId}`
+      `/api/v1/bookings/checkout-session/${tourId}`
     );
 
     // console.log('SESSION RESPONSE:', data);
