@@ -17,6 +17,7 @@ const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const cors = require('cors');
 const bookingRouter = require('./routes/bookingRoute.js');
+const bookingController = require('./controllers/bookingController.js');
 
 const app = express();
 app.enable('trust proxy');
@@ -71,7 +72,14 @@ const limiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
+
 app.use('/api', limiter);
+//we need the body of this request to come in not a JSON form, in stream
+app.use(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webHookCheckout
+);
 //Body Parser, reading data from body into req.body
 //parser will understand that if request is larger than 10kb it will block it
 app.use(express.json({ limit: '10kb' }));
