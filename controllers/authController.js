@@ -54,16 +54,22 @@ exports.signup = catchAsync(async (req, res, next) => {
     role: req.body.role,
   });
 
-  // Try to send the welcome email, but don't block the user if it fails
-  try {
-    const url = `${req.protocol}://${req.get('host')}/me`;
-    await new Email(newUser, url).sendWelcome();
-  } catch (err) {
-    console.error('ERROR 💥: Could not send welcome email.', err);
-  }
-
   // Send the token and log the user in, regardless of email success
   createSendToken(newUser, 201, req, res);
+
+  // Send the welcome email in the background (fire-and-forget)
+  // This ensures the user gets a fast response and isn't blocked by email delivery.
+  (async () => {
+    try {
+      const url = `${req.protocol}://${req.get('host')}/me`;
+      await new Email(newUser, url).sendWelcome();
+    } catch (err) {
+      console.error(
+        'ERROR 💥: Could not send welcome email in the background.',
+        err
+      );
+    }
+  })();
 });
 
 //login user
