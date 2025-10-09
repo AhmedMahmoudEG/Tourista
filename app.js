@@ -19,14 +19,22 @@ const cors = require('cors');
 const bookingRouter = require('./routes/bookingRoute.js');
 
 const app = express();
-app.enable('trust proxy');
+// The 'trust proxy' setting is needed for deployment on platforms like Render.
+// It tells Express to trust the 'X-Forwarded-*' headers set by the proxy.
+// Setting it to 1 trusts the first proxy in the chain.
+app.set('trust proxy', 1);
 //set pug view engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // 1) GLOBAL MIDDLEWARES
-app.use(cors({ origin: 'http://localhost:8000' }));
-app.options('*', cors());
+const corsOptions = {
+  origin:
+    process.env.NODE_ENV === 'production'
+      ? process.env.CLIENT_URL // e.g., https://tourista-oac7.onrender.com
+      : 'http://localhost:8000',
+};
+app.use(cors(corsOptions));
 // app.options('/api/v1/tours/:id', cors());
 
 //serving static files
@@ -69,10 +77,6 @@ const limiter = rateLimit({
   message: 'Too many request from this IP, please try again in an hour!',
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  // Use a custom key generator to safely get the IP address from the proxy header
-  keyGenerator: (req, res) => {
-    return req.ip;
-  },
 });
 app.use('/api', limiter);
 //Body Parser, reading data from body into req.body
