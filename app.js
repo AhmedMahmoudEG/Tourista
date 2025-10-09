@@ -19,22 +19,15 @@ const cors = require('cors');
 const bookingRouter = require('./routes/bookingRoute.js');
 
 const app = express();
-// The 'trust proxy' setting is needed for deployment on platforms like Render.
-// It tells Express to trust the 'X-Forwarded-*' headers set by the proxy.
-// Setting it to 1 trusts the first proxy in the chain.
+app.enable('trust proxy');
 app.set('trust proxy', 1);
 //set pug view engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // 1) GLOBAL MIDDLEWARES
-const corsOptions = {
-  origin:
-    process.env.NODE_ENV === 'production'
-      ? process.env.CLIENT_URL // e.g., https://tourista-oac7.onrender.com
-      : 'http://localhost:8000',
-};
-app.use(cors(corsOptions));
+app.use(cors({ origin: 'http://localhost:8000' }));
+app.options('*', cors());
 // app.options('/api/v1/tours/:id', cors());
 
 //serving static files
