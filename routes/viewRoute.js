@@ -1,13 +1,11 @@
 const express = require('express');
 const viewController = require('./../controllers/viewsController');
 const authController = require('./../controllers/authController');
-const bookingController = require('./../controllers/bookingController');
-
 const router = new express.Router();
 
 // Add this middleware to ALL routes to check for booking query params
 // router.use(bookingController.createUserCheckout);
-
+router.use(viewController.alerts);
 router.get('/', authController.isLoggedIn, viewController.getOverview);
 router.get('/tour/:slug', authController.isLoggedIn, viewController.getTour);
 router.get('/login', authController.isLoggedIn, viewController.getLoginForm);

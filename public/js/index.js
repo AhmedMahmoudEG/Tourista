@@ -8,6 +8,7 @@ import { resetPassword } from './resetPassword';
 import { forgotPassword } from './forgetPassword';
 import { bookTour } from './stripe';
 import { initDragToScroll } from './dragToScroll';
+import { showAlerts } from './alerts';
 
 // DOM Elements
 const mapBox = document.getElementById('map');
@@ -139,3 +140,7 @@ if (bookBtn) {
     bookTour(tourId);
   });
 }
+
+const alertMessage = document.querySelector('body').dataset.alert;
+if (alertMessage) showAlerts('success', alertMessage, 20);
+//)
