@@ -43,7 +43,7 @@ app.use(
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
       'script-src': [
         "'self'",
-        'https://js.stripe.com/v3/',
+        'https://js.stripe.com/', // Allow all scripts from js.stripe.com
         'https://api.mapbox.com/',
         "'unsafe-inline'",
       ],
