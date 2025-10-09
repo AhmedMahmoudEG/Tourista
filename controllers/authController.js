@@ -61,7 +61,11 @@ exports.signup = catchAsync(async (req, res, next) => {
   // This ensures the user gets a fast response and isn't blocked by email delivery.
   (async () => {
     try {
-      const url = `${req.protocol}://${req.get('host')}/me`;
+      // Determine the correct host. In production, rely on x-forwarded-host or host.
+      const host = req.get('x-forwarded-host') || req.get('host');
+      // Determine the correct protocol.
+      const protocol = req.get('x-forwarded-proto') || req.protocol;
+      const url = `${protocol}://${host}/me`;
       await new Email(newUser, url).sendWelcome();
     } catch (err) {
       console.error(
@@ -211,7 +215,11 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
   // 3) built Reset URL
   try {
-    const resetURL = `${req.protocol}://${req.get('host')}/resetPassword/${resetToken}`;
+    // Determine the correct host and protocol for the reset URL
+    const host = req.get('x-forwarded-host') || req.get('host');
+    const protocol = req.get('x-forwarded-proto') || req.protocol;
+
+    const resetURL = `${protocol}://${host}/resetPassword/${resetToken}`;
     await new Email(user, resetURL).sendPasswordReset();
     // 4) send Email
     res.status(200).json({
