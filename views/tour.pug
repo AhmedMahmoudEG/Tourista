@@ -5,14 +5,16 @@ mixin overviewBox(label, text,icon)
     .overview-box__detail
         svg.overview-box__icon
             use(xlink:href=`/img/icons.svg#icon-${icon}`)
-        pan.overview-box__label=label
+        span.overview-box__label=label
         span.overview-box__text=text
 
 block content
     section.section-header
         .header__hero
             .header__hero-overlay &nbsp;
-            img.header__hero-img(src=`/img/tours/${tour.imageCover}`, alt=`${tour.name}`)
+            //- Support both Cloudinary URLs and local images
+            - const coverImage = tour.imageCover.startsWith('http') ? tour.imageCover : `/img/tours/${tour.imageCover}`
+            img.header__hero-img(src=coverImage, alt=`${tour.name}`)
 
         .heading-box
             h1.heading-primary
@@ -26,6 +28,7 @@ block content
                     svg.heading-box__icon
                         use(xlink:href='/img/icons.svg#icon-map-pin')
                     span.heading-box__text=tour.startLocation.description
+    
     section.section-description
         .overview-box
             div
@@ -36,11 +39,14 @@ block content
                     +overviewBox('Difficulty',tour.difficulty,'trending-up')
                     +overviewBox('Participants',tour.maxGroupSize,'user')
                     +overviewBox('Rating',`${tour.ratingsAverage} / 5`,'star')
+                
                 .overview-box__group
                     h2.heading-secondary.ma-bt-lg Your tour guides
                     each guide in tour.guides
                         .overview-box__detail
-                            img.overview-box__img(src=`/img/users/${guide.photo}`, alt=`${guide.name}`)
+                            //- Support both Cloudinary URLs and local images for guide photos
+                            - const guidePhoto = guide.photo && guide.photo.startsWith('http') ? guide.photo : `/img/users/${guide.photo || 'default.jpg'}`
+                            img.overview-box__img(src=guidePhoto, alt=`${guide.name}`)
                             - if (guide.role==='lead-guide')
                                 span.overview-box__label Lead Guide
                             - if (guide.role==='guide')
@@ -53,11 +59,12 @@ block content
             each p in paragraphs
                 p.description__text= p
 
-
     section.section-pictures
-        each image , i in tour.images 
+        each image, i in tour.images 
             .picture-box
-                img.picture-box__img(src=`/img/tours/${image}`, alt=` ${tour.name} ${i+1}`,class=`.picture-box__img--${i+1}`)
+                //- Support both Cloudinary URLs and local images
+                - const tourImage = image.startsWith('http') ? image : `/img/tours/${image}`
+                img.picture-box__img(src=tourImage, alt=`${tour.name} ${i+1}`, class=`picture-box__img--${i+1}`)
 
     section.section-map
         #map(data-locations=`${JSON.stringify(tour.locations)}`)
@@ -67,13 +74,15 @@ block content
             each review in tour.reviews
                 +reviewCard(review) 
 
-
     section.section-cta
         .cta
             .cta__img.cta__img--logo
                 img(src='/img/logo-green-round2.png', alt='Natours logo')
-            img.cta__img.cta__img--1(src=`/img/tours/${tour.images[1]}`, alt=`${tour.name}`)
-            img.cta__img.cta__img--2(src=`/img/tours/${tour.images[2]}`, alt=`${tour.name}`)
+            //- Support both Cloudinary URLs and local images for CTA images
+            - const ctaImage1 = tour.images[1] && tour.images[1].startsWith('http') ? tour.images[1] : `/img/tours/${tour.images[1]}`
+            - const ctaImage2 = tour.images[2] && tour.images[2].startsWith('http') ? tour.images[2] : `/img/tours/${tour.images[2]}`
+            img.cta__img.cta__img--1(src=ctaImage1, alt=`${tour.name}`)
+            img.cta__img.cta__img--2(src=ctaImage2, alt=`${tour.name}`)
             .cta__content
                 h2.heading-secondary What are you waiting for?
                 p.cta__text=` ${tour.duration} days. 1 adventure. Infinite memories. Make it yours today!`

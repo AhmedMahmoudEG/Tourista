@@ -50,28 +50,21 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    photo: req.file ? req.file.filename : undefined, // Use filename from resize middleware
+    photo: req.file ? req.file.filename : undefined, // This now contains Cloudinary URL
     role: req.body.role,
   });
 
-  // Send the token and log the user in, regardless of email success
   createSendToken(newUser, 201, req, res);
 
-  // Send the welcome email in the background (fire-and-forget)
-  // This ensures the user gets a fast response and isn't blocked by email delivery.
+  // Send welcome email in background
   (async () => {
     try {
-      // Determine the correct host. In production, rely on x-forwarded-host or host.
       const host = req.get('x-forwarded-host') || req.get('host');
-      // Determine the correct protocol.
       const protocol = req.get('x-forwarded-proto') || req.protocol;
       const url = `${protocol}://${host}/me`;
       await new Email(newUser, url).sendWelcome();
     } catch (err) {
-      console.error(
-        'ERROR 💥: Could not send welcome email in the background.',
-        err
-      );
+      console.error('ERROR: Could not send welcome email', err);
     }
   })();
 });

@@ -4,20 +4,7 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 const sharp = require('sharp');
-
-// const multerStorage = multer.diskStorage({
-//   //destination
-//   destination: (req, file, cb) => {
-//     //the callback take first the error if not then destination
-//     cb(null, 'public/img/users');
-//   },
-//   filename: (req, file, cb) => {
-//     //user-userid-timestap.jpeg
-//     //getting image extension
-//     const ext = file.mimetype.split('/')[1];
-//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-//   },
-// });
+const cloudinary = require('../utils/cloudinary');
 const multerStorage = multer.memoryStorage();
 
 //multer filter
@@ -33,19 +20,36 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 exports.uploadUserPhoto = upload.single('photo');
 
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
-  //if there's not photo then go next
   if (!req.file) return next();
 
-  // If the user is logged in (updateMe), use req.user.id
-  // If it's signup, req.user doesn't exist yet → just use Date.now()
-  const uniqueId = req.user ? req.user.id : 'newUser';
-  req.file.filename = `user-${uniqueId}-${Date.now()}.jpeg`;
+  const uniqueId = req.user ? req.user.id : Date.now();
 
-  await sharp(req.file.buffer)
+  // Resize image and convert to buffer
+  const buffer = await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
-    .toFile(`public/img/users/${req.file.filename}`);
+    .toBuffer();
+
+  // Upload to Cloudinary
+  const result = await new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'tourista/users',
+        public_id: `user-${uniqueId}-${Date.now()}`,
+        resource_type: 'image',
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+    uploadStream.end(buffer);
+  });
+
+  // Store the Cloudinary URL
+  req.file.filename = result.secure_url;
+
   next();
 });
 

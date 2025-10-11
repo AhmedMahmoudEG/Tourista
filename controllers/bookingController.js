@@ -25,8 +25,6 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
           product_data: {
             name: `${tour.name} Tour`,
             description: tour.summary,
-            // In production, images should be hosted and publicly accessible.
-            // The URL must be absolute for Stripe to be able to access it.
             images: [
               `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`,
             ],
@@ -38,9 +36,11 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     ],
   });
 
+  // ✅ Return the checkout URL
   res.status(200).json({
     status: 'success',
-    url: session.url,
+    url: session.url, // ← Add this
+    session,
   });
 });
 

@@ -38,21 +38,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Set security HTTP headers
 app.use(
   helmet.contentSecurityPolicy({
-    // Loosened for demonstration; tighten as needed for production
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
       'script-src': [
         "'self'",
-        'https://js.stripe.com/', // Allow all scripts from js.stripe.com
+        'https://js.stripe.com/',
         'https://api.mapbox.com/',
         "'unsafe-inline'",
       ],
       connectSrc: [
         "'self'",
-        'ws://localhost:*',
-        'http://127.0.0.1:*',
+        'wss://*.tiles.mapbox.com', // ← Add WebSocket support
+        'https://*.tiles.mapbox.com',
         'https://api.mapbox.com',
-        'https://events.mapbox.com',
+        'https://events.mapbox.com', // ← Already there
         'https://*.stripe.com',
       ],
       'frame-src': ["'self'", 'https://js.stripe.com/'],
@@ -61,7 +60,7 @@ app.use(
         'data:',
         'blob:',
         'https://*.mapbox.com',
-        `https://*.tile.openstreetmap.org`,
+        'https://*.tile.openstreetmap.org',
       ],
       'worker-src': ["'self'", 'blob:'],
     },

@@ -5,6 +5,7 @@ const catchAsync = require('./../utils/catchAsync');
 const factory = require('./handlerFactory');
 const multer = require('multer');
 const sharp = require('sharp');
+const cloudinary = require('../utils/cloudinary');
 
 //multer storage
 const multerStorage = multer.memoryStorage();
@@ -32,32 +33,58 @@ exports.uploadTourImages = upload.fields([
 exports.resizeTourImages = catchAsync(async (req, res, next) => {
   if (!req.files.imageCover && !req.files.images) return next();
 
-  // 1) Process cover image
+  // Process cover image
   if (req.files.imageCover && req.files.imageCover[0]) {
-    req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
-
-    await sharp(req.files.imageCover[0].buffer)
+    const coverBuffer = await sharp(req.files.imageCover[0].buffer)
       .resize(2000, 1333)
       .toFormat('jpeg')
       .jpeg({ quality: 90 })
-      .toFile(`public/img/tours/${req.body.imageCover}`);
+      .toBuffer();
+
+    const coverResult = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'tourista/tours',
+          public_id: `tour-${req.params.id}-${Date.now()}-cover`,
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      uploadStream.end(coverBuffer);
+    });
+
+    req.body.imageCover = coverResult.secure_url;
   }
 
-  // 2) Process other images
+  // Process other images
   if (req.files.images) {
     req.body.images = [];
 
     await Promise.all(
       req.files.images.map(async (file, i) => {
-        const fileName = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
-
-        await sharp(file.buffer)
+        const buffer = await sharp(file.buffer)
           .resize(2000, 1333)
           .toFormat('jpeg')
           .jpeg({ quality: 90 })
-          .toFile(`public/img/tours/${fileName}`);
+          .toBuffer();
 
-        req.body.images.push(fileName);
+        const result = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'tourista/tours',
+              public_id: `tour-${req.params.id}-${Date.now()}-${i + 1}`,
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          uploadStream.end(buffer);
+        });
+
+        req.body.images.push(result.secure_url);
       })
     );
   }

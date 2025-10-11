@@ -21,6 +21,7 @@
     "axios": "^1.12.2",
     "axois": "^0.0.1-security",
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.7.0",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "core-js": "^2.6.12",
