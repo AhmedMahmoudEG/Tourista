@@ -29,10 +29,8 @@ app.set('views', path.join(__dirname, 'views'));
 // 1) GLOBAL MIDDLEWARES
 app.use(cors({ origin: 'http://localhost:8000' }));
 app.options('*', cors());
-// app.options('/api/v1/tours/:id', cors());
 
 //serving static files
-// app.use(express.static(`${__dirname}/public`));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set security HTTP headers
@@ -46,12 +44,14 @@ app.use(
         'https://api.mapbox.com/',
         "'unsafe-inline'",
       ],
-      connectSrc: [
+      'connect-src': [
         "'self'",
-        'wss://*.tiles.mapbox.com', // ← Add WebSocket support
+        'ws://localhost:*',
+        'http://127.0.0.1:*',
+        'wss://*.tiles.mapbox.com',
         'https://*.tiles.mapbox.com',
         'https://api.mapbox.com',
-        'https://events.mapbox.com', // ← Already there
+        'https://events.mapbox.com',
         'https://*.stripe.com',
       ],
       'frame-src': ["'self'", 'https://js.stripe.com/'],
@@ -61,8 +61,12 @@ app.use(
         'blob:',
         'https://*.mapbox.com',
         'https://*.tile.openstreetmap.org',
+        'https://res.cloudinary.com', // ← ADD THIS LINE
       ],
       'worker-src': ["'self'", 'blob:'],
+      'child-src': ["'self'", 'blob:'],
+      'style-src': ["'self'", "'unsafe-inline'", 'https://api.mapbox.com'],
+      'font-src': ["'self'", 'https://fonts.gstatic.com'],
     },
   })
 );
@@ -71,24 +75,26 @@ app.use(
 // if (process.env.NODE_ENV === 'development') {
 //   app.use(morgan('dev'));
 // }
+
 //limit request from same API
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
   message: 'Too many request from this IP, please try again in an hour!',
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 app.use('/api', limiter);
+
 //we need the body of this request to come in not a JSON form, in stream
 app.use(
   '/webhook-checkout',
   express.raw({ type: 'application/json' }),
   bookingController.webHookCheckout
 );
+
 //Body Parser, reading data from body into req.body
-//parser will understand that if request is larger than 10kb it will block it
 app.use(express.json({ limit: '10kb' }));
 app.use(
   express.urlencoded({
@@ -97,8 +103,10 @@ app.use(
   })
 );
 app.use(cookieParser());
+
 //Data Sanitaztion Against NoSQL query injection
 app.use(mongoSanitize());
+
 // Data Sanitaztion against XSS
 app.use(xss());
 
@@ -115,7 +123,9 @@ app.use(
     ],
   })
 );
+
 app.use(compression());
+
 //test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
@@ -123,7 +133,6 @@ app.use((req, res, next) => {
 });
 
 // 2) ROUTES
-//pug route
 app.use(protectOptional);
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
@@ -135,7 +144,8 @@ app.use('/api/v1/bookings', bookingRouter);
 app.all('*', (req, res, next) => {
   next(new AppError(`cannot find ${req.originalUrl} on this server!`, 404));
 });
-//Global Error handlig Middleware
+
+//Global Error handling Middleware
 app.use(globalErrorHandler);
 
 module.exports = app;
