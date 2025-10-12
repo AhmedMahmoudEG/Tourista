@@ -4,6 +4,9 @@ export const displayMap = locations => {
   mapboxgl.accessToken =
     'pk.eyJ1Ijoiam9uYXNzY2htZWR0bWFubiIsImEiOiJjam54ZmM5N3gwNjAzM3dtZDNxYTVlMnd2In0.ytpI7V7w7cyT1Kq5rT9Z1A';
 
+  // ✅ Save current scroll position
+  const scrollY = window.scrollY;
+
   const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/jonasschmedtmann/cjvi9q8jd04mi1cpgmg7ev3dy',
@@ -28,6 +31,8 @@ export const displayMap = locations => {
     // 3) Add a popup with location info
     new mapboxgl.Popup({
       offset: 30,
+      closeButton: true,
+      closeOnClick: false,
     })
       .setLngLat(loc.coordinates)
       .setHTML(`<p>Day ${loc.day}: ${loc.description}</p>`)
@@ -37,12 +42,22 @@ export const displayMap = locations => {
     bounds.extend(loc.coordinates);
   });
 
-  map.fitBounds(bounds, {
-    padding: {
-      top: 200,
-      bottom: 150,
-      left: 100,
-      right: 100,
-    },
+  // ✅ Wait for map to fully load
+  map.on('load', () => {
+    // Fit bounds without animation
+    map.fitBounds(bounds, {
+      padding: {
+        top: 200,
+        bottom: 150,
+        left: 100,
+        right: 100,
+      },
+      duration: 0, // No animation
+    });
+
+    // ✅ Restore scroll position after map loads
+    setTimeout(() => {
+      window.scrollTo(0, scrollY);
+    }, 100);
   });
 };

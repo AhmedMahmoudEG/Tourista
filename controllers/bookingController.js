@@ -56,7 +56,6 @@ const createBookingCheckout = async session => {
     const price = session.amount_total / 100;
 
     await Booking.create({ tour, user, price });
-    console.log('✅ Booking created successfully');
   } catch (error) {
     console.error('❌ Error creating booking:', error);
   }
@@ -79,12 +78,10 @@ exports.webHookCheckout = catchAsync(async (req, res, next) => {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.error('⚠️ Webhook signature verification failed:', err.message);
     return res.status(400).send(`Webhook error: ${err.message}`);
   }
 
   if (event.type === 'checkout.session.completed') {
-    console.log('✅ Checkout session completed');
     await createBookingCheckout(event.data.object);
   }
 

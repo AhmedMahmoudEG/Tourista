@@ -201,10 +201,6 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
     return next(new AppError("There's no user with this email address", 404));
   // 2) generate token
   const resetToken = user.createPasswordResetToken();
-  // Note: changes made in createPasswordResetToken() only live in memory,
-  // not in the database. We must call save() to persist them.
-  // We disable validation here because we are not updating the password
-  // fields in this request, and running validators would cause errors.
   await user.save({ validateBeforeSave: false });
   // 3) built Reset URL
   try {

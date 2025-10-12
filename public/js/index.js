@@ -22,18 +22,42 @@ const forgotForm = document.getElementById('forgotPasswordForm');
 const bookBtn = document.getElementById(`book-tour`);
 
 initDragToScroll();
-// Wait for DOM to be fully loaded including CSS
+
+// ✅ Lazy load map when user scrolls near it
+let mapLoaded = false;
+
+function initMapOnScroll() {
+  if (!mapBox || mapLoaded) return;
+
+  const mapSection = document.querySelector('.section-map');
+  if (!mapSection) return;
+
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !mapLoaded) {
+          const locations = JSON.parse(mapBox.dataset.locations);
+          displayMap(locations);
+          mapLoaded = true;
+          observer.disconnect();
+        }
+      });
+    },
+    { rootMargin: '200px' } // Load when map is 200px away from viewport
+  );
+
+  observer.observe(mapSection);
+}
+
+// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function () {
-  // Map initialization - wait a bit longer for CSS to fully load
-  if (mapBox) {
-    const locations = JSON.parse(mapBox.dataset.locations);
-    displayMap(locations);
-  }
+  // ✅ Initialize lazy loading for map
+  initMapOnScroll();
 
   // Login form handling
   if (loginForm) {
     loginForm.addEventListener('submit', function (e) {
-      e.preventDefault(); // stop page refresh
+      e.preventDefault();
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       login(email, password);
@@ -60,26 +84,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-// Also handle the case where DOMContentLoaded has already fired
-if (document.readyState === 'loading') {
-  // Document is still loading, wait for DOMContentLoaded
-} else {
-  // Document has already loaded, execute immediately
-  if (mapBox) {
-    try {
-      const locations = JSON.parse(mapBox.dataset.locations);
-      // console.log('Locations data (immediate):', locations);
-
-      if (locations && locations.length > 0) {
-        setTimeout(() => {
-          displayMap(locations);
-        }, 300);
-      }
-    } catch (error) {
-      console.error('Error parsing locations data (immediate):', error);
-    }
-  }
-}
 if (updateSettingsForm) {
   updateSettingsForm.addEventListener('submit', async e => {
     e.preventDefault();
@@ -112,8 +116,6 @@ if (userPasswordForm)
     document.getElementById('password-confirm').value = '';
   });
 
-// --- Forgot Password Form
-
 if (forgotForm) {
   forgotForm.addEventListener('submit', e => {
     e.preventDefault();
@@ -143,4 +145,3 @@ if (bookBtn) {
 
 const alertMessage = document.querySelector('body').dataset.alert;
 if (alertMessage) showAlerts('success', alertMessage, 20);
-//)
