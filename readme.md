@@ -1,5 +1,5 @@
 <h2 align="center">
-  🌍 <a href="https://tourista-oac7.onrender.com/" target="_blank">Live Demo — Tourista App</a>
+  🌍 <a href="https://tourista-psi.vercel.app/" target="_blank">Live Demo — Tourista App</a>
 </h2>
 
 # 🧭 Tourista – Full-Stack Travel Booking Application
